@@ -1,15 +1,24 @@
-## This function creates a cache a matrix and it's invese. It's intention is to
-## avoid calculating several times the inverse of a given matrix. It is implemented
-## as a vector with 4 named columns that are pointers to function.
+## This functions implements a solution that caches a matrix and it's invese. It's intention is to
+## avoid calculating several times the inverse of a given matrix, which can be a costly operation for
+## large matrices. The cache solution uses 2 functions that must be used together.
+##
+## makeCacheMatrix(x,...) takes a matrix x as input and returns a vector with 4 named functions:
 ##
 ## set - sets the original matrix
 ## get - gets the original matrix
 ## setinverse - sets the inverted matrix
 ## getinverse - gets the inverted matrix
 ##
-## Notice that this doesn't compute the inverted matrix. To compute, see the cacheSolve() function.
+## makeCacheMatrix  doesn't compute the inverted matrix, it's only a vector that keeps the cache values.
+## To compute, the cacheSolve() function must be used.
+##
+## cacheSolve(x,...) takes the vector x, returned by makeCacheMatrix, and returns the invese matrix. If a
+##                   inverse matrix isn't in cache, the function computers it.
+##
+## Notice: This solution only works for square matrices.
 ##
 ## Usage:
+##
 ## m <- matrix(1:4, ncol=2)
 ## cm <- makeCacheMatrix(m)
 ##
@@ -17,11 +26,12 @@
 ##      [,1] [,2]
 ## [1,]   -2  1.5
 ## [2,]    1 -0.5
+##
 
 ## Keeps the cache of a matrix and it's inverse
 
 makeCacheMatrix <- function(x = matrix()) {
-  im <- NULL
+  im <- NULL # keeps the inverse matrix
   
   #test if matrix is a square matrix, otherwise return null
   if(dim(x)[1]!=dim(x)[2]) {
@@ -34,15 +44,16 @@ makeCacheMatrix <- function(x = matrix()) {
     #test if matrix is a square matrix, otherwise return null
     if(dim(y)[1]!=dim(y)[2]) {
       message("suplied matrix isn't a square matrix")
-      return(NULL)
+      return(NULL) 
     }
     
-    x <<- y
-    im <<- NULL
+    x <<- y      #stores the cache matrix
+    im <<- NULL  #since matrix was changed, clean's the inverse.
   }
   get <- function() x
   setinverse <- function(inverse) im <<- inverse
   getinverse <- function() im
+  
   list(set = set, get = get,
        setinverse = setinverse,
        getinverse = getinverse)
